@@ -10,7 +10,7 @@ app.use("/users/", userRouter);
 app.use("/musics/", musicRouter);
 
 
-const server = app.listen(3000, () => {
+const server = app.listen(3001, () => {
   if (server) {
     const address = server.address() as AddressInfo;
     console.log(`Servidor rodando em http://localhost:${address.port}`);
