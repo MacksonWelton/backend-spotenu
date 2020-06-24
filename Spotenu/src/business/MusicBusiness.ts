@@ -8,9 +8,9 @@ import { GenericError } from "../Erros/GenericError";
 export class MusicBusiness {
   public async addGenre(id: string, name: string, token: string): Promise<void> {
 
-    const getName = new MusicDatabase().getGenreByName(name);
+    const genre = new MusicDatabase().getGenreByName(name);
 
-    if ([getName].length === 0) {
+    if ([genre].length === 0) {
       throw new NotFoundError("This genre already exists in the database");
     }
 
@@ -32,13 +32,13 @@ export class MusicBusiness {
       throw new GenericError("You must be an administrator to access this feature.");
     }
 
-    const getGenre = new MusicDatabase().getGenreByName(name);
+    const genre = new MusicDatabase().getGenreByName(name);
 
-    if (getGenre === undefined) {
+    if (genre === undefined) {
       throw new NotFoundError("This genre already exists in the database");
     }
 
-    return getGenre;
+    return genre;
   }
 
   public async createAlbum(id: string, name: string, genres: string[], token: string): Promise<any> {

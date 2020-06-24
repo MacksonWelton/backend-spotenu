@@ -3,7 +3,7 @@ import { UserController } from "../controller/UserController";
 //linha responsável por criar um módulo de rotas no express
 export const userRouter = express.Router();
 
-userRouter.post("/usersignup", new UserController().userSignup);
+userRouter.post("/listener-signup", new UserController().listenerSignup);
 userRouter.post("/adminsignup", new UserController().adminSignup);
 userRouter.post("/bandsingup", new UserController().bandSignup);
 userRouter.get("/allbands", new UserController().getAllBands);

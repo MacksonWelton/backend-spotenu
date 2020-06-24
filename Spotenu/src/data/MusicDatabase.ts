@@ -13,11 +13,11 @@ export class MusicDatabase extends BaseDatabase {
     `)
   }
 
-  public async getGenreByName(name: string): Promise<any> {
-    const result = await super.getConnection().raw(`
-      SELECT id, name FROM ${MusicDatabase.TABLE_GENRE}
-      WHERE name = "${name}"
-    `)
+  public async getGenreByName(name: any): Promise<any> {
+    const result = await super.getConnection().select("*")
+    .from(MusicDatabase.TABLE_GENRE)
+    .whereIn("name", name);
+
     return result[0][0];
   }
 
