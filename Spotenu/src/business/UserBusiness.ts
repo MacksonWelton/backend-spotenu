@@ -8,7 +8,7 @@ import { GenericError } from "../Erros/GenericError";
 
 export class UserBusiness {
 
-  public async userSignup(
+  public async listenerSignup(
     id: string,
     name: string,
     nickname: string,
@@ -28,7 +28,7 @@ export class UserBusiness {
 
     const user: User = new User(id, name, nickname, email, password, isApproved, role);
 
-    await new UserDatabase().userSignup(user);
+    await new UserDatabase().listenerSignup(user);
   }
 
   public async admSignup(
@@ -54,7 +54,7 @@ export class UserBusiness {
 
     const user: User = new User(id, name, nickname, email, password, isApproved, role);
 
-    await new UserDatabase().userSignup(user);
+    await new UserDatabase().listenerSignup(user);
 
   }
 
@@ -81,7 +81,7 @@ export class UserBusiness {
 
   public async login(email, nickname, password): Promise<any> {
 
-    const result = await new UserDatabase().login(email, nickname);
+    const result = await new UserDatabase().getUserByEmailOrNickname(email, nickname);
 
     if (result === undefined) {
       throw new InvalidParameterError("Password or login is wrong.");

@@ -4,7 +4,7 @@ import { User, UserRole } from "../model/User";
 export class UserDatabase extends BaseDatabase {
   private static TABLENAME: string = "spotenu";
 
-  public async userSignup(user: User): Promise<void> {
+  public async listenerSignup(user: User): Promise<void> {
     const isApproved = super.convertBooleanToTinyInt(user.getIsApproved());
     await super.getConnection().raw(`
       INSERT INTO ${UserDatabase.TABLENAME} (id, name, nickname, email, password, is_approved, role)
@@ -59,7 +59,7 @@ export class UserDatabase extends BaseDatabase {
     `)
   }
 
-  public async login(email: string, nickname: string): Promise<any> {
+  public async getUserByEmailOrNickname(email: string, nickname: string): Promise<any> {
     const result = await super.getConnection().raw(`
     SELECT * FROM ${UserDatabase.TABLENAME}
     WHERE email = "${email}" OR nickname = "${nickname}"

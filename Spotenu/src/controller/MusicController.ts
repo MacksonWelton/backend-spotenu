@@ -23,8 +23,6 @@ export class MusicController {
     try {
       const token = req.headers.authorization as string;
       const name = req.query.name as string;
-
-      console.log(name)
   
       const result = new MusicBusiness().getGenreByName(name, token);
 

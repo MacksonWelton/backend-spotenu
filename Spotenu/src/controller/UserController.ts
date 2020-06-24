@@ -8,7 +8,7 @@ import { UserRole, stringToUserRole, User } from '../model/User';
 
 export class UserController {
 
-  public async userSignup(req: Request, res: Response) {
+  public async listenerSignup(req: Request, res: Response) {
     try {
       let { name, nickname, email, password, role} = req.body;
       const id: string = await new IdGenerator().generate();
@@ -18,7 +18,7 @@ export class UserController {
       const isApproved: boolean = true;
       const userRole: UserRole = stringToUserRole(role); 
 
-      await new UserBusiness().userSignup(id, name, nickname, email, password, isApproved, userRole);
+      await new UserBusiness().listenerSignup(id, name, nickname, email, password, isApproved, userRole);
 
       res.status(200).send(result)
     } catch(err) {
