@@ -1,10 +1,26 @@
-import { BaseDatabase } from "./BaseDatabase";
 import { User, UserRole } from "../model/User";
+import { BaseDatabase } from "./BaseDatabase";
 
 export class UserDatabase extends BaseDatabase {
-  private static TABLENAME: string = "spotenu";
+  private static TABLENAME: string = "spotenu_users";
 
   public async listenerSignup(user: User): Promise<void> {
+    const isApproved = super.convertBooleanToTinyInt(user.getIsApproved());
+    await super.getConnection().raw(`
+      INSERT INTO ${UserDatabase.TABLENAME} (id, name, nickname, email, password, is_approved, role)
+      VALUES(
+        "${user.getId()}",
+        "${user.getName()}",
+        "${user.getNickname()}",
+        "${user.getEmail()}",
+        "${user.getPassword()}",
+        "${isApproved}",
+        "${user.getRole()}"
+          )
+    `)
+  }
+
+  public async PremiumListenerSignup(user: User): Promise<void> {
     const isApproved = super.convertBooleanToTinyInt(user.getIsApproved());
     await super.getConnection().raw(`
       INSERT INTO ${UserDatabase.TABLENAME} (id, name, nickname, email, password, is_approved, role)

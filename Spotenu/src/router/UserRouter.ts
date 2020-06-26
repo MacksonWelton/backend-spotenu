@@ -4,8 +4,9 @@ import { UserController } from "../controller/UserController";
 export const userRouter = express.Router();
 
 userRouter.post("/listener-signup", new UserController().listenerSignup);
-userRouter.post("/adminsignup", new UserController().adminSignup);
-userRouter.post("/bandsingup", new UserController().bandSignup);
+userRouter.post("/premium-listener-signup", new UserController().PremiumListenerSignup);
+userRouter.post("/admin-signup", new UserController().adminSignup);
+userRouter.post("/band-singup", new UserController().bandSignup);
 userRouter.get("/allbands", new UserController().getAllBands);
 userRouter.put("/approveband", new UserController().approveBand);
 userRouter.post("/login", new UserController().login);
