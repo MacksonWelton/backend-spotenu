@@ -42,8 +42,8 @@ export class User {
 
 export enum UserRole {
   BAND = "BAND",
-  PAYINGLISTENER = "PAYING LISTENER",
-  NONPAYINGLISTENER = "NON PAYING LISTENER",
+  PREMIUM_LISTENER = "PREMIUM LISTENER",
+  FREE_LISTENER = "FREE LISTENER",
   ADM = "ADMINISTRATOR"
 }
 
@@ -51,10 +51,10 @@ export const stringToUserRole = (input: string): UserRole => {
   switch (input) {
     case "BAND":
       return UserRole.BAND;
-    case "PAYING LISTENER":
-      return UserRole.PAYINGLISTENER;
-    case "NON PAYING LISTENER":
-      return UserRole.NONPAYINGLISTENER;
+    case "PREMIUM LISTENER":
+      return UserRole.PREMIUM_LISTENER;
+    case "FREE LISTENER":
+      return UserRole.FREE_LISTENER;
     case "ADMINISTRATOR":
       return UserRole.ADM;
     default:

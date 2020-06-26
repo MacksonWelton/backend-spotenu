@@ -1,10 +1,10 @@
-import { User, UserRole, stringToUserRole } from "../model/User";
 import { UserDatabase } from "../data/UserDatabase";
-import { HashGenerator } from "../service/hashGenerator";
-import { TokenGenerator } from "../service/tokenGenerator";
+import { GenericError } from "../Erros/GenericError";
 import { InvalidParameterError } from "../Erros/InvalidParameterError";
 import { NotFoundError } from "../Erros/NotFoundError";
-import { GenericError } from "../Erros/GenericError";
+import { User, UserRole } from "../model/User";
+import { HashGenerator } from "../service/hashGenerator";
+import { TokenGenerator } from "../service/tokenGenerator";
 
 export class UserBusiness {
 
@@ -22,13 +22,36 @@ export class UserBusiness {
       throw new InvalidParameterError("Invalid password");
     }
 
-    if (role === "ADMINISTRATOR") {
+    if (role === UserRole.ADM) {
       throw new InvalidParameterError("You must be an administrator to access this feature.");
     }
 
     const user: User = new User(id, name, nickname, email, password, isApproved, role);
 
     await new UserDatabase().listenerSignup(user);
+  }
+
+  public async PremiumListenerSignup(
+    id: string,
+    name: string,
+    nickname: string,
+    email: string,
+    password: string,
+    isApproved: boolean,
+    role: UserRole
+  ): Promise<void> {
+
+    if (password.length < 6) {
+      throw new InvalidParameterError("Invalid password");
+    }
+
+    if (role === UserRole.ADM) {
+      throw new InvalidParameterError("You must be an administrator to access this feature.");
+    }
+
+    const user: User = new User(id, name, nickname, email, password, isApproved, role);
+
+    await new UserDatabase().PremiumListenerSignup(user);
   }
 
   public async admSignup(
@@ -46,9 +69,9 @@ export class UserBusiness {
       throw new InvalidParameterError("Invalid password");
     }
 
-    const userRole = new TokenGenerator().verify(token).role;
+    const userRole: UserRole = new TokenGenerator().verify(token).role;
 
-    if (userRole !== "ADMINISTRATOR") {
+    if (userRole !== UserRole.ADM) {
       throw new InvalidParameterError("You must be an administrator to access this feature.");
     }
 
@@ -88,9 +111,16 @@ export class UserBusiness {
     }
 
     const pass = await new HashGenerator().compareHash(password, result.password);
-  
+    const token: string = await new TokenGenerator().generate({ id: result.id, role: result.role });
+    const userRole: UserRole = new TokenGenerator().verify(token).role;
+
     if (pass) {
-      return result;
+      if (userRole === UserRole.ADM) {
+        const tokenAdm = token;
+        return tokenAdm;
+      } else {
+        return token;
+      }
     } else {
       throw new InvalidParameterError("Password or login is wrong.")
     }
@@ -98,7 +128,7 @@ export class UserBusiness {
 
   public async getAllBands(token: string): Promise<any> {
 
-    const userRole = new TokenGenerator().verify(token).role;
+    const userRole: UserRole = new TokenGenerator().verify(token).role;
 
     if (userRole !== "ADMINISTRATOR") {
       throw new InvalidParameterError("You must be an administrator to access this feature.");
@@ -109,7 +139,7 @@ export class UserBusiness {
 
   public async approveBand(id: string, isApprove: boolean, token): Promise<void> {
     const result = await new UserDatabase().getBandById(id);
-    const userRole = new TokenGenerator().verify(token).role;
+    const userRole: UserRole = new TokenGenerator().verify(token).role;
 
     if (!result) {
       throw new NotFoundError("Band not found.");
@@ -119,7 +149,7 @@ export class UserBusiness {
       throw new GenericError("Band has already been approved");
     }
 
-    if (userRole !== "ADMINISTRATOR") {
+    if (userRole !== UserRole.ADM) {
       throw new InvalidParameterError("You must be an administrator to access this feature.");
     }
 

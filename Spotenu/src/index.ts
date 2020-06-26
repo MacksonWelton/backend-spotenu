@@ -2,7 +2,9 @@ import express from "express";
 import {AddressInfo} from "net";
 import { userRouter } from "./router/UserRouter";
 import { musicRouter } from "./router/MusicRouter";
+import cors from "cors";
 const app = express();
+app.use(cors())
 
 app.use(express.json());
 
