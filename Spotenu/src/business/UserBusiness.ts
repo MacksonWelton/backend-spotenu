@@ -113,13 +113,12 @@ export class UserBusiness {
     const pass = await new HashGenerator().compareHash(password, result.password);
     const token: string = await new TokenGenerator().generate({ id: result.id, role: result.role });
     const userRole: UserRole = new TokenGenerator().verify(token).role;
-
     if (pass) {
       if (userRole === UserRole.ADM) {
         const tokenAdm = token;
-        return tokenAdm;
+        return {tokenAdm};
       } else {
-        return token;
+        return {token};
       }
     } else {
       throw new InvalidParameterError("Password or login is wrong.")

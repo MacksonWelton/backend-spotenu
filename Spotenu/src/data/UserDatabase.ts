@@ -85,7 +85,7 @@ export class UserDatabase extends BaseDatabase {
 
   public async getAllBands(): Promise<any> {
     const result = await super.getConnection().raw(`
-    SELECT name, email, nickname, is_approved FROM ${UserDatabase.TABLENAME}
+    SELECT * FROM ${UserDatabase.TABLENAME}
     JOIN spotenu_band_description
     ON spotenu_users.id = spotenu_band_description.id;
     `)

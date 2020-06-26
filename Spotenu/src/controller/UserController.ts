@@ -85,7 +85,7 @@ export class UserController {
   public async login(req: Request, res: Response) {
     try {
       const { email, nickname, password } = req.body;
-      const { token, tokenAdm } = await new UserBusiness().login(email, nickname, password);
+      const {token, tokenAdm} = await new UserBusiness().login(email, nickname, password);
       
       res.status(200).send({ token, tokenAdm });
     } catch (err) {
