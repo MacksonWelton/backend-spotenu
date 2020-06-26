@@ -53,7 +53,6 @@ export class UserDatabase extends BaseDatabase {
   }
 
   public async bandSignup(user: User, description: string): Promise<void> {
-    const isApproved = super.convertBooleanToTinyInt(user.getIsApproved());
     await super.getConnection().raw(`
       INSERT INTO ${UserDatabase.TABLENAME} (id, name, nickname, email, password, role)
       VALUES(
@@ -87,7 +86,8 @@ export class UserDatabase extends BaseDatabase {
   public async getAllBands(): Promise<any> {
     const result = await super.getConnection().raw(`
     SELECT name, email, nickname, is_approved FROM ${UserDatabase.TABLENAME}
-    WHERE role = "${UserRole.BAND}"
+    JOIN spotenu_band_description
+    ON spotenu_users.id = spotenu_band_description.id;
     `)
     return result[0];
   }
