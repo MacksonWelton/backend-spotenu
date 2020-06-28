@@ -45,7 +45,7 @@ export class UserController {
 
   public async adminSignup(req: Request, res: Response) {
     try {
-      let tokenBody = req.headers.authorization as string;
+      let tokenBody = req.headers.authorization as string || req.headers.Authorization as string;
       let { name, nickname, email, password, role } = req.body;
       const id = await new IdGenerator().generate();
       const token = await new TokenGenerator().generate({ id, role });
@@ -95,7 +95,7 @@ export class UserController {
 
   public async getAllBands(req: Request, res: Response) {
     try {
-      const token: string = req.headers.authorization as string;
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
 
       const result: string = await new UserBusiness().getAllBands(token);
 
@@ -107,7 +107,7 @@ export class UserController {
 
   public async approveBand(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization as string;
+      const token = req.headers.authorization as string || req.headers.Authorization as string;
       const { id, isApprove } = req.body;
 
       await new UserBusiness().approveBand(id, isApprove, token);
