@@ -117,8 +117,15 @@ export class UserBusiness {
       if (userRole === UserRole.ADM) {
         const tokenAdm = token;
         return {tokenAdm};
+      } else if (userRole === UserRole.BAND) {
+        const tokenBand = token;
+        return {tokenBand};
+      } else if (userRole === UserRole.FREE_LISTENER) {
+        const tokenFreeListener = token;
+        return tokenFreeListener;
       } else {
-        return {token};
+        const tokenPremiumListener = token;
+        return tokenPremiumListener;
       }
     } else {
       throw new InvalidParameterError("Password or login is wrong.")
