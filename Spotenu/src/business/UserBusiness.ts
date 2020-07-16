@@ -113,6 +113,7 @@ export class UserBusiness {
     const pass = await new HashGenerator().compareHash(password, result.password);
     const token: string = await new TokenGenerator().generate({ id: result.id, role: result.role });
     const userRole: UserRole = new TokenGenerator().verify(token).role;
+    
     if (pass) {
       if (userRole === UserRole.ADM) {
         const tokenAdm = token;
@@ -123,7 +124,7 @@ export class UserBusiness {
       } else if (userRole === UserRole.FREE_LISTENER) {
         const tokenFreeListener = token;
         return tokenFreeListener;
-      } else {
+      } else if (userRole === UserRole.PREMIUM_LISTENER) {
         const tokenPremiumListener = token;
         return tokenPremiumListener;
       }
