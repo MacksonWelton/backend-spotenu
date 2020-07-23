@@ -3,57 +3,9 @@ import { GenericError } from "../Erros/GenericError";
 import { NotFoundError } from "../Erros/NotFoundError";
 import { UserRole } from "../model/User";
 import { TokenGenerator } from "../service/tokenGenerator";
+import { AlbumDatabase } from "../data/AlbumDatabase";
 
 export class MusicBusiness {
-  public async addGenre(id: string, name: string, token: string): Promise<void> {
-
-    const genre = new MusicDatabase().getGenreByName(name);
-
-    if ([genre].length === 0) {
-      throw new NotFoundError("This genre already exists in the database");
-    }
-
-    const userRole = new TokenGenerator().verify(token).role;
-
-    if (userRole !== UserRole.ADM) {
-      throw new GenericError("You must be an administrator to access this feature.");
-    }
-
-    await new MusicDatabase().addGenre(id, name);
-
-  }
-
-  public async getGenreByName(name: string, token: string): Promise<any> {
-
-    const userRole = new TokenGenerator().verify(token).role;
-
-    if (userRole !== UserRole.ADM) {
-      throw new GenericError("You must be an administrator to access this feature.");
-    }
-
-    const genre = new MusicDatabase().getGenreByName(name);
-
-    if (genre === undefined) {
-      throw new NotFoundError("This genre already exists in the database");
-    }
-
-    return genre;
-  }
-
-  public async createAlbum(id: string, name: string, genres: string[], token: string): Promise<any> {
-
-    const dataUser = await new TokenGenerator().verify(token);
-
-    if (dataUser.role !== UserRole.BAND) {
-      throw new GenericError("Only bands can create albums");
-    }
-
-    const genresData = await new MusicDatabase().getGenreByName(genres);
-
-    const genresId = genresData.map(genre => genre.id);
-
-    await new MusicDatabase().createAlbum(id, dataUser.id, name, genresId);
-  }
 
   public async addMusic(id: string, name: string, album: string, token: string): Promise<void> {
 
@@ -63,7 +15,11 @@ export class MusicBusiness {
       throw new GenericError("Only bands can add musics");
     }
 
-    const dataAlbum = await new MusicDatabase().getAlbumByName(album);
+    if (!name.trim()) {
+      throw new GenericError("The field cannot be empty")
+    }
+
+    const dataAlbum = await new AlbumDatabase().getAlbumByName(album);
 
 
     if (dataAlbum.length === 0) {
@@ -82,82 +38,46 @@ export class MusicBusiness {
 
   }
 
-  public async getAllAlbums(token: string): Promise<any> {
-
+  public async getMusicsByBand(token: string, page: number): Promise<any> {
     const dataUser = await new TokenGenerator().verify(token);
 
     if (!dataUser) {
       throw new GenericError("You must be logged in to access this feature.");
     }
 
-    return await new MusicDatabase().getAllAlbums();
+    const genresPerPage: number = 10;
+    let offset: number = genresPerPage * page;
 
+    return await new MusicDatabase().getMusicsByBand(dataUser.id, genresPerPage, offset);
   }
 
-  public async getAlbumByBand(token: string, idBand: string): Promise<any> {
-
+  public async getAllMusics(token: string, page: number): Promise<any> {
     const dataUser = await new TokenGenerator().verify(token);
 
     if (!dataUser) {
       throw new GenericError("You must be logged in to access this feature.");
     }
 
-    return await new MusicDatabase().getAlbumByBand(dataUser.id, idBand);
+    const musicsPerPage: number = 10;
+    let offset: number = musicsPerPage * page;
+
+    return await new MusicDatabase().getAllMusics(musicsPerPage, offset);
+
   }
 
-  public async getAllGenres(token: string): Promise<any> {
+  public async searchMusics(musicName: string, page: number, token: string): Promise<any> {
     const dataUser = await new TokenGenerator().verify(token);
 
     if (!dataUser) {
       throw new GenericError("You must be logged in to access this feature.");
     }
 
-    return await new MusicDatabase().getAllGenres();
+    const musicsPerPage: number = 10;
+    let offset: number = musicsPerPage * page;
+
+    return await new MusicDatabase().searchMusics(musicName, musicsPerPage, offset);
   }
 
-  public async getMusicsByBand(token: string, idBand: string): Promise<any> {
-    const dataUser = await new TokenGenerator().verify(token);
-
-    if (!dataUser) {
-      throw new GenericError("You must be logged in to access this feature.");
-    }
-
-    return await new MusicDatabase().getMusicsByBand(dataUser.id, idBand);
-  }
-
-  public async getMusicsbyAlbum(idAlbum: string, token: string): Promise<any> {
-    const dataUser = await new TokenGenerator().verify(token);
-
-    if (!dataUser) {
-      throw new GenericError("You must be logged in to access this feature.");
-    }
-
-    return await new MusicDatabase().getMusicsbyAlbum(idAlbum);
-  }
-
-  public async getAllMusics(token: string): Promise<any> {
-    const dataUser = await new TokenGenerator().verify(token);
-
-    if (!dataUser) {
-      throw new GenericError("You must be logged in to access this feature.");
-    }
-
-    return await new MusicDatabase().getAllMusics();
-
-  }
-
-  
-  public async deleteAlbum(id: string, token: string): Promise<void> {
-    const dataUser = await new TokenGenerator().verify(token);
-
-    if (!dataUser) {
-      throw new GenericError("You must be logged in to access this feature.");
-    }
-
-    await new MusicDatabase().deleteAlbum(id);
-  }
-
-  
   public async deleteMusic(id: string, token: string): Promise<void> {
     const dataUser = await new TokenGenerator().verify(token);
 
@@ -165,18 +85,10 @@ export class MusicBusiness {
       throw new GenericError("You must be logged in to access this feature.");
     }
 
-    await new MusicDatabase().deleteMusic(id);
-  }
+    let idMusics: string[] = [];
+    idMusics = id.split(",");
 
-  
-  public async deleteGenre(id: string, token: string): Promise<void> {
-    const dataUser = await new TokenGenerator().verify(token);
-
-    if (!dataUser) {
-      throw new GenericError("You must be logged in to access this feature.");
-    }
-
-    await new MusicDatabase().deleteGenre(id);
+    await new MusicDatabase().deleteMusic(idMusics);
   }
 
 }

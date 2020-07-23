@@ -10,3 +10,5 @@ userRouter.post("/band-singup", new UserController().bandSignup);
 userRouter.get("/all-bands", new UserController().getAllBands);
 userRouter.put("/approve-band", new UserController().approveBand);
 userRouter.post("/login", new UserController().login);
+userRouter.get("/all-listener", new UserController().getAllListeners)
+userRouter.put("/promote-listener", new UserController().promoteListener)
