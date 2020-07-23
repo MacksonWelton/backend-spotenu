@@ -45,7 +45,7 @@ export class UserController {
 
   public async adminSignup(req: Request, res: Response) {
     try {
-      let tokenBody = req.headers.authorization as string || req.headers.Authorization as string;
+      let tokenBody: string = req.headers.authorization as string || req.headers.Authorization as string;
       let { name, nickname, email, password, role } = req.body;
       const id = await new IdGenerator().generate();
       const token = await new TokenGenerator().generate({ id, role });
@@ -64,7 +64,6 @@ export class UserController {
 
   public async bandSignup(req: Request, res: Response) {
     try {
-
       let { name, nickname, email, description, password } = req.body;
       const id: string = await new IdGenerator().generate();
       password = await new HashGenerator().hash(password);
@@ -97,8 +96,9 @@ export class UserController {
   public async getAllBands(req: Request, res: Response) {
     try {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const page: number = Number(req.query.page) >= 0 ? Number(req.query.page) : 0;
 
-      const result: string = await new UserBusiness().getAllBands(token);
+      const result: string = await new UserBusiness().getAllBands(token, page);
 
       res.status(200).send(result)
     } catch (err) {
@@ -108,11 +108,36 @@ export class UserController {
 
   public async approveBand(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization as string || req.headers.Authorization as string;
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
       const { id, isApprove } = req.body;
 
       await new UserBusiness().approveBand(id, isApprove, token);
       res.status(200).send({ message: "Band successfully approved" })
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message })
+    }
+  }
+
+  public async getAllListeners(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const page: number = Number(req.query.page) >= 0 ? Number(req.query.page) : 0;
+
+      const result = await new UserBusiness().getAllListeners(token, page);
+      res.status(200).send(result)
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message})
+    }
+  }
+
+  public async promoteListener(req: Request, res: Response) {
+    try {
+      const token: string= req.headers.authorization as string || req.headers.Authorization as string;
+      const idListener = req.body.idListener;
+
+      await new UserBusiness().promoteListener(token, idListener);
+
+      res.status(200).send("Updated successfully")
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message })
     }

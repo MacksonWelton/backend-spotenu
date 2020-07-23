@@ -133,7 +133,7 @@ export class UserBusiness {
     }
   }
 
-  public async getAllBands(token: string): Promise<any> {
+  public async getAllBands(token: string, page: number): Promise<any> {
 
     const userRole: UserRole = new TokenGenerator().verify(token).role;
 
@@ -141,7 +141,10 @@ export class UserBusiness {
       throw new InvalidParameterError("You must be an administrator to access this feature.");
     }
 
-    return await new UserDatabase().getAllBands();
+    const bandsPerPage: number = 10;
+    let offset: number = bandsPerPage * page;
+
+    return await new UserDatabase().getAllBands(bandsPerPage, offset);
   }
 
   public async approveBand(id: string, isApprove: boolean, token): Promise<void> {
@@ -161,5 +164,28 @@ export class UserBusiness {
     }
 
     await new UserDatabase().approveBand(id, isApprove);
+  }
+
+  public async getAllListeners(token: string, page: number): Promise<any> {
+    const userRole: UserRole = new TokenGenerator().verify(token).role;
+
+    if (userRole !== "ADMINISTRATOR") {
+      throw new InvalidParameterError("You must be an administrator to access this feature.");
+    }
+
+    const listenerPerPage: number = 10;
+    let offset: number = listenerPerPage * page;
+
+    return await new UserDatabase().getAllListeners(listenerPerPage, offset)
+  }
+
+  public async promoteListener(token: string, idListener: string): Promise<void> {
+    const userRole: UserRole = new TokenGenerator().verify(token).role;
+
+    if (userRole !== UserRole.ADM) {
+      throw new InvalidParameterError("You must be an administrator to access this feature.");
+    }
+
+    await new UserDatabase().promoteListener(idListener);
   }
 }
