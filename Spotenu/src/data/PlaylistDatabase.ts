@@ -9,7 +9,7 @@ export class PlaylistDatabase extends BaseDatabase {
 
   public async createPlaylist(id: string, userId: string, name: string): Promise<void> {
     await super.getConnection().raw(`
-      INSERT INTO ${PlaylistDatabase.TABLE_PLAYLIST} (playlist_id, name_playlist, id_user)
+      INSERT INTO ${PlaylistDatabase.TABLE_PLAYLIST} (playlist_id, playlist_name, id_user)
       VALUES("${id}", "${name}", "${userId}")
     `);
   }
@@ -86,7 +86,7 @@ export class PlaylistDatabase extends BaseDatabase {
 
     await super.getConnection().raw(`
       UPDATE ${PlaylistDatabase.TABLE_PLAYLIST}
-      SET name_playlist = "${playlistName}"
+      SET playlist_name = "${playlistName}"
       WHERE playlist_id = "${playlistId}"
     `)
 
