@@ -1,10 +1,7 @@
 import { BaseDatabase } from "./BaseDatabase";
 
 export class MusicDatabase extends BaseDatabase {
-  private static TABLE_GENRE: string = "spotenu_genre";
   private static TABLE_MUSIC: string = "spotenu_musics";
-
-
 
   public async getMusicByName(name: string): Promise<any> {
     const result = await super.getConnection().raw(`
@@ -19,7 +16,7 @@ export class MusicDatabase extends BaseDatabase {
     const result = await super.getConnection().raw(`
       SELECT SQL_CALC_FOUND_ROWS * FROM ${ MusicDatabase.TABLE_MUSIC}
       JOIN spotenu_users
-      ON spotenu_users.id = id_band and name_music LIKE "%${musicName}%"
+      ON spotenu_users.id = band_id and name_music LIKE "%${musicName}%"
       LIMIT ${musicsPerPage} OFFSET ${offset}
       `);
 
@@ -30,10 +27,10 @@ export class MusicDatabase extends BaseDatabase {
     return { numberOfRows: numberOfRows[0][0].numberOfRows, musics: result[0] };
   }
 
-  public async addMusic(id: string, name: string, idAlbum: string, idBand: string): Promise<void> {
+  public async addMusic(id: string, name: string, albumId: string, bandId: string): Promise<void> {
     await super.getConnection().raw(`
-      INSERT INTO ${ MusicDatabase.TABLE_MUSIC}(id_music, name_music, id_album, id_band)
-      VALUES("${id}", "${name}", "${idAlbum}", "${idBand}")
+      INSERT INTO ${ MusicDatabase.TABLE_MUSIC}(music_id, name_music, album_id, band_id)
+      VALUES("${id}", "${name}", "${albumId}", "${bandId}")
         `);
   }
 
@@ -41,7 +38,7 @@ export class MusicDatabase extends BaseDatabase {
     const result = await super.getConnection().raw(`
       SELECT SQL_CALC_FOUND_ROWS * FROM ${MusicDatabase.TABLE_MUSIC}
       JOIN spotenu_users 
-      ON spotenu_users.id = "${id}" AND id_band = "${id}"
+      ON spotenu_users.id = "${id}" AND band_id = "${id}"
       LIMIT ${musicsPerPage} OFFSET ${offset}
     `);
 
@@ -52,10 +49,10 @@ export class MusicDatabase extends BaseDatabase {
     return { numberOfRows: numberOfRows[0][0].numberOfRows, musics: result[0] };
   }
 
-  public async getMusicsbyAlbum(idAlbum: string): Promise<any> {
+  public async getMusicsbyAlbum(albumId: string): Promise<any> {
     const result = await super.getConnection().raw(`
       SELECT * FROM ${MusicDatabase.TABLE_MUSIC}
-      WHERE id_album = "${idAlbum}"
+      WHERE album_id = "${albumId}"
     `);
 
     return result[0];
@@ -65,7 +62,7 @@ export class MusicDatabase extends BaseDatabase {
     const result = await super.getConnection().raw(`
       SELECT SQL_CALC_FOUND_ROWS * FROM ${MusicDatabase.TABLE_MUSIC}
       JOIN spotenu_users
-      ON ${MusicDatabase.TABLE_MUSIC}.id_band = spotenu_users.id
+      ON ${MusicDatabase.TABLE_MUSIC}.band_id = spotenu_users.id
       LIMIT ${musicsPerPage} OFFSET ${offset}
     `);
 
@@ -76,10 +73,19 @@ export class MusicDatabase extends BaseDatabase {
     return { numberOfRows: numberOfRows[0][0].numberOfRows, musics: result[0] };
   }
 
-  public async deleteMusic(id: string[]): Promise<void> {
+  public async editMusicName(musicName: string, musicId: string): Promise<void> {
+    await super.getConnection().raw(`
+      UPDATE ${MusicDatabase.TABLE_MUSIC}
+      SET music_name = "${musicName}"
+      WHERE music_id = "${musicId}"
+    `);
+  }
+
+  public async deleteMusic(bandId: string, musicsId: string[]): Promise<void> {
     await super.getConnection()
       .del()
-      .whereIn("id_music", id)
+      .where("band_id", bandId)
+      .whereIn("music_id", musicsId)
       .from(MusicDatabase.TABLE_MUSIC)
   }
 }

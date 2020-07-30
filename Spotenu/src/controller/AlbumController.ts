@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { AlbumBusiness } from '../business/AlbumBusiness';
 import { IdGenerator } from '../service/idGenerator';
-import { BaseDatabase } from '../data/BaseDatabase';
 
 export class AlbumController {
   public async createAlbum(req: Request, res: Response) {
@@ -13,13 +12,10 @@ export class AlbumController {
 
       await new AlbumBusiness().createAlbum(id, name, genres, token);
 
-      res.status(200).send({ message: "Successfully created" })
-
+      res.status(200).send("Álbum criado com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getAllAlbums(req: Request, res: Response) {
@@ -29,12 +25,10 @@ export class AlbumController {
 
       const result = await new AlbumBusiness().getAllAlbums(token, page);
 
-      res.status(200).send(result)
+      res.status(200).send(result);
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getAlbumByBand(req: Request, res: Response) {
@@ -45,27 +39,49 @@ export class AlbumController {
 
       const result = await new AlbumBusiness().getAlbumByBand(token, page);
 
-      res.status(200).send(result)
+      res.status(200).send(result);
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getMusicsbyAlbum(req: Request, res: Response) {
     try {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
-      const idAlbum: string = req.query.idAlbum as string;
+      const albumId: string = req.query.albumId as string;
 
-      const result = await new AlbumBusiness().getMusicsbyAlbum(token, idAlbum)
+      const result = await new AlbumBusiness().getMusicsbyAlbum(token, albumId)
 
-      res.status(200).send(result)
+      res.status(200).send(result);
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message });
+    }
+  }
+
+  public async editAlbumName(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const { albumId, name } = req.body;
+
+      await new AlbumBusiness().editAlbumName(token, albumId, name);
+
+      res.status(200).send("Editado com sucesso.");
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message })
     }
+  }
 
-    await BaseDatabase.destroyConnection();
+  public async editAlbumGenres(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const { albumId, genresId } = req.body;
+
+      await new AlbumBusiness().editAlbumGenres(token, albumId, genresId);
+
+      res.status(200).send("Editado com sucesso!");
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message });
+    }
   }
 
   public async deleteAlbum(req: Request, res: Response) {
@@ -74,11 +90,9 @@ export class AlbumController {
       const id: any = req.params.id;
 
       await new AlbumBusiness().deleteAlbum(id, token);
-      res.status(200).send({ message: "Successfully deleted" });
+      res.status(200).send("Deletado com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 }

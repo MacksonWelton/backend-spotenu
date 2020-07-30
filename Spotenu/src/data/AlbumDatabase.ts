@@ -1,23 +1,19 @@
 import { BaseDatabase } from "./BaseDatabase";
 
 export class AlbumDatabase extends BaseDatabase {
-  private static TABLE_GENRE: string = "spotenu_genre";
-  private static TABLE_MUSIC: string = "spotenu_musics";
   private static TABLE_ALBUM: string = "spotenu_album";
   private static TABLE_ALBUM_GENRE: string = "spotenu_album_genre";
-  private static TABLE_PLAYLIST: string = "spotenu_playlists";
-  private static TABLE_PLAYLIST_MUSIC: string = "spotenu_playlists_musics";
 
-  public async createAlbum(idAlbum: string, idBand: string, name: string, genres: string[]): Promise<void> {
+  public async createAlbum(albumId: string, bandId: string, name: string, genres: string[]): Promise<void> {
     await super.getConnection().raw(`
-      INSERT INTO ${AlbumDatabase.TABLE_ALBUM} (id_album, id_band, album_name)
-      VALUES("${idAlbum}", "${idBand}", "${name}")
+      INSERT INTO ${AlbumDatabase.TABLE_ALBUM} (album_id, band_id, album_name)
+      VALUES("${albumId}", "${bandId}", "${name}")
     `);
 
-    for (let idGenre of genres) {
+    for (let genreId of genres) {
       await super.getConnection().raw(`
-        INSERT INTO ${AlbumDatabase.TABLE_ALBUM_GENRE} (id_album, id_genre)
-        VALUES("${idAlbum}", "${idGenre}")
+        INSERT INTO ${AlbumDatabase.TABLE_ALBUM_GENRE} (album_id, genre_id)
+        VALUES("${albumId}", "${genreId}")
       `);
     }
   }
@@ -35,7 +31,7 @@ export class AlbumDatabase extends BaseDatabase {
     const result = await super.getConnection().raw(`
       SELECT SQL_CALC_FOUND_ROWS * FROM ${AlbumDatabase.TABLE_ALBUM}
       JOIN spotenu_users
-      ON ${AlbumDatabase.TABLE_ALBUM}.id_band = spotenu_users.id
+      ON ${AlbumDatabase.TABLE_ALBUM}.band_id = spotenu_users.id
       LIMIT ${albumsPerPage} OFFSET ${offset}
     `);
 
@@ -50,7 +46,7 @@ export class AlbumDatabase extends BaseDatabase {
     const result = await super.getConnection().raw(`
       SELECT SQL_CALC_FOUND_ROWS  * FROM ${AlbumDatabase.TABLE_ALBUM}
       JOIN spotenu_users
-      ON spotenu_users.id = "${id}" AND id_band = "${id}"
+      ON spotenu_users.id = "${id}" AND band_id = "${id}"
       LIMIT ${albumsPerPage} OFFSET ${offset}
     `);
 
@@ -61,10 +57,25 @@ export class AlbumDatabase extends BaseDatabase {
     return { numberOfRows: numberOfRows[0][0].numberOfRows, albums: result[0] };
   }
 
+  public async editAlbumName(bandId: string, albumId: string, name: string): Promise<void> {
+    await super.getConnection().raw(`
+      UPDATE ${AlbumDatabase.TABLE_ALBUM}
+      SET album_name = "${name}"
+      WHERE album_id = "${albumId}" and band_id = "${bandId}"
+    `);
+  }
+
+  public async editAlbumGenres(albumId: string, genresId: string): Promise<void> {
+    await super.getConnection()
+      .where("album_id", albumId)
+      .update("genre_id", genresId)
+      .from(AlbumDatabase.TABLE_ALBUM_GENRE);
+  }
+
   public async deleteAlbum(id: string[]): Promise<void> {
     await super.getConnection()
       .del()
-      .whereIn("id_album", id)
+      .whereIn("album_id", id)
       .from(AlbumDatabase.TABLE_ALBUM)
   }
 }

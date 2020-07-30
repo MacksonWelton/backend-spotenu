@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { MusicBusiness } from '../business/MusicBusiness';
 import { IdGenerator } from '../service/idGenerator';
-import { BaseDatabase } from '../data/BaseDatabase';
 
 export class MusicController {
 
@@ -15,12 +14,11 @@ export class MusicController {
 
       await new MusicBusiness().addMusic(id, name, album, token);
 
-      res.status(200).send({ message: "Successfully add" })
+      res.status(200).send("Adicionado com sucesso.");
+
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message })
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getMusicsByBand(req: Request, res: Response) {
@@ -34,8 +32,6 @@ export class MusicController {
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message })
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async searchMusics(req: Request, res: Response) {
@@ -50,8 +46,6 @@ export class MusicController {
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message })
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getAllMusics(req: Request, res: Response) {
@@ -65,8 +59,19 @@ export class MusicController {
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message })
     }
+  }
 
-    await BaseDatabase.destroyConnection();
+  public async editMusicName(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const {musicName, musicId} = req.body;
+
+      await new MusicBusiness().editMusicName(token, musicName, musicId);
+
+      res.status(200).send("Editado com sucesso.");
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message });
+    }
   }
 
   public async deleteMusic(req: Request, res: Response) {
@@ -75,12 +80,10 @@ export class MusicController {
       const id: any = req.params.id;
 
       await new MusicBusiness().deleteMusic(id, token);
-      res.status(200).send({ message: "Successfully deleted" });
+      res.status(200).send("Deletado com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
 
