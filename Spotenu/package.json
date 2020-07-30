@@ -36,6 +36,7 @@
     "bestzip": "^2.1.5"
   },
   "devDependencies": {
+    "eslint": "^7.5.0",
     "ts-node-dev": "^1.0.0-pre.44"
   }
 }

@@ -21,7 +21,7 @@ export class UserController {
 
       res.status(200).send(result)
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
@@ -39,7 +39,7 @@ export class UserController {
 
       res.status(200).send(result)
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
@@ -56,9 +56,9 @@ export class UserController {
 
       await new UserBusiness().admSignup(id, name, nickname, email, password, isApproved, userRole, tokenBody);
 
-      res.status(200).send({ token })
+      res.status(200).send({ token });
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
@@ -74,9 +74,9 @@ export class UserController {
 
       const token = await new TokenGenerator().generate({ id, role });
 
-      res.status(200).send({ token })
+      res.status(200).send({ token });
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
 
   }
@@ -86,10 +86,11 @@ export class UserController {
       const { email, nickname, password } = req.body;
       const result = await new UserBusiness().login(email, nickname, password);
       const {tokenAdm, tokenBand, tokenFreeListener, tokenPremiumListener} = result;
-      
+
       res.status(200).send({ tokenAdm, tokenBand, tokenFreeListener, tokenPremiumListener });
+
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
@@ -102,19 +103,19 @@ export class UserController {
 
       res.status(200).send(result)
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
   public async approveBand(req: Request, res: Response) {
     try {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
-      const { id, isApprove } = req.body;
+      const { bandId, isApprove } = req.body;
 
-      await new UserBusiness().approveBand(id, isApprove, token);
-      res.status(200).send({ message: "Band successfully approved" })
+      await new UserBusiness().approveBand(bandId, isApprove, token);
+      res.status(200).send(isApprove ? "Banda aprovada com sucesso." : "Banda reprovada com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
@@ -126,20 +127,59 @@ export class UserController {
       const result = await new UserBusiness().getAllListeners(token, page);
       res.status(200).send(result)
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message})
+      res.status(err.errorCode || 400).send({ message: err.message});
+    }
+  }
+
+  public getIdUser(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+
+      const result = new UserBusiness().getIdUser(token);
+
+      res.status(200).send(result)
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message });
+    }
+  }
+
+  public async editUserName(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const name: string = req.body.name;
+
+      await new UserBusiness().editUserName(token, name);
+
+      res.status(200).send("Successfully edited")
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 
   public async promoteListener(req: Request, res: Response) {
     try {
-      const token: string= req.headers.authorization as string || req.headers.Authorization as string;
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
       const idListener = req.body.idListener;
 
       await new UserBusiness().promoteListener(token, idListener);
 
-      res.status(200).send("Updated successfully")
+      res.status(200).send("Ouvinte foi promovido a premium com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
+    }
+  }
+
+  public async approveListener(req: Request, res: Response) {
+    try {
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
+      const {listenerId, isApprove} = req.body; 
+
+      await new UserBusiness().approveListener(token, listenerId, isApprove
+        );
+
+      res.status(200).send(isApprove ? "Ouvinte aprovado com sucesso." : "Ouvinte reprovado com sucesso.");
+    } catch (err) {
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
   }
 }

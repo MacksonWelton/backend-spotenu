@@ -10,5 +10,8 @@ userRouter.post("/band-singup", new UserController().bandSignup);
 userRouter.get("/all-bands", new UserController().getAllBands);
 userRouter.put("/approve-band", new UserController().approveBand);
 userRouter.post("/login", new UserController().login);
-userRouter.get("/all-listener", new UserController().getAllListeners)
-userRouter.put("/promote-listener", new UserController().promoteListener)
+userRouter.get("/all-listener", new UserController().getAllListeners);
+userRouter.put("/promote-listener", new UserController().promoteListener);
+userRouter.put("/approve-listener", new UserController().approveListener);
+userRouter.get("/id-user", new UserController().getIdUser);
+userRouter.put("/edit-user-name", new UserController().editUserName);

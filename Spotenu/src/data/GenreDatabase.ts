@@ -32,10 +32,10 @@ export class GenreDatabase extends BaseDatabase {
     return { numberOfRows: numberOfRows[0][0].numberOfRows, genres: result[0] };
   }
 
-  public async deleteGenre(id: string): Promise<void> {
-    await super.getConnection().raw(`
-      DELETE FROM ${GenreDatabase.TABLE_GENRE}
-      WHERE id_music = "${id}"
-  `);
-  }
+  public async deleteGenre(genresId: string[]): Promise<void> {
+    await super.getConnection()
+      .del()
+      .whereIn("id", genresId)
+      .from(GenreDatabase.TABLE_GENRE)
+    }
 }

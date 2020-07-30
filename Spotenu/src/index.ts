@@ -19,8 +19,8 @@ app.use(express.json());
 app.use("/users/", userRouter);
 app.use("/musics/", musicRouter);
 app.use("/playlists/", playlistRouter);
-app.use("/albums", albumRouter);
-app.use("/genres", genreRouter);
+app.use("/albums/", albumRouter);
+app.use("/genres/", genreRouter);
 
 export default app;
 

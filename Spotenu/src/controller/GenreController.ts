@@ -12,14 +12,12 @@ export class GenreController {
 
       const id = new IdGenerator().generate();
 
-      await new GenreBusiness().addGenre(id, name, token)
+      await new GenreBusiness().addGenre(id, name, token);
 
-      res.status(200).send({ message: "Registered successfully" })
+      res.status(200).send("Cadastrado com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getGenreByName(req: Request, res: Response) {
@@ -29,13 +27,11 @@ export class GenreController {
 
       const result = new GenreBusiness().getGenreByName(name, token);
 
-      res.status(200).send(result)
+      res.status(200).send(result);
 
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async getAllGenres(req: Request, res: Response) {
@@ -45,26 +41,23 @@ export class GenreController {
 
       const result = await new GenreBusiness().getAllGenres(token, page);
 
-      res.status(200).send(result)
+      res.status(200).send(result);
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 
   public async deleteGenre(req: Request, res: Response) {
     try {
       const token = req.headers.authorization as string || req.headers.Authorization as string;
-      const id = req.params.id;
+      const genresId = req.params.genresId as string;
 
-      await new GenreBusiness().deleteGenre(id, token);
-      res.status(200).send("Successfully deleted");
+      await new GenreBusiness().deleteGenre(genresId, token);
+      res.status(200).send("Deletado com sucesso.");
     } catch (err) {
-      res.status(err.errorCode || 400).send({ message: err.message })
+      res.status(err.errorCode || 400).send({ message: err.message });
     }
-    
-    await BaseDatabase.destroyConnection();
+  
   }
 
 }
