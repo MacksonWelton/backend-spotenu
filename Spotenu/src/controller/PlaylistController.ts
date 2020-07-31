@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { PlaylistBusiness } from '../business/PlaylistBusiness';
 import { IdGenerator } from '../service/idGenerator';
-import { BaseDatabase } from '../data/BaseDatabase';
 
 export class PlaylistController {
   public async createPlaylist(req: Request, res: Response) {
@@ -62,7 +61,7 @@ export class PlaylistController {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
       const idPlaylist: string = req.query.idPlaylist as string;
       const page: number = Number(req.query.page) >= 0 ? Number(req.query.page) : 0;
-      
+
       const result = await new PlaylistBusiness().getMusicsByPlaylist(token, idPlaylist, page);
       res.status(200).send(result);
     } catch (err) {
@@ -73,7 +72,7 @@ export class PlaylistController {
   public async editPlaylistName(req: Request, res: Response) {
     try {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
-      const {idPlaylist, playlistName} = req.body;
+      const { idPlaylist, playlistName } = req.body;
 
       await new PlaylistBusiness().editPlaylistName(token, idPlaylist, playlistName);
 
@@ -87,7 +86,7 @@ export class PlaylistController {
     try {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
       const { idPlaylist, idOwner, isPrivate } = req.body;
-      
+
       await new PlaylistBusiness().makePlaylistCollaborative(token, idPlaylist, idOwner, isPrivate);
       res.status(200).send("Playlist tornada colaborativa com sucesso.");
     } catch (err) {
@@ -123,7 +122,7 @@ export class PlaylistController {
   public async deleteMusicFromPlaylist(req: Request, res: Response) {
     try {
       const token: string = req.headers.authorization as string || req.headers.Authorization as string;
-      const {idPlaylist, idMusics} = req.params;
+      const { idPlaylist, idMusics } = req.params;
 
       await new PlaylistBusiness().deleteMusicFromPlaylist(token, idPlaylist, idMusics);
 

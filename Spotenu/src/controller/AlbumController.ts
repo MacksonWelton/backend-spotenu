@@ -20,7 +20,7 @@ export class AlbumController {
 
   public async getAllAlbums(req: Request, res: Response) {
     try {
-      const token: string = req.headers.authorization as string;
+      const token: string = req.headers.authorization as string || req.headers.Authorization as string;
       const page: number = Number(req.query.page) >= 0 ? Number(req.query.page) : 0;
 
       const result = await new AlbumBusiness().getAllAlbums(token, page);

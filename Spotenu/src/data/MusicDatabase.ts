@@ -6,7 +6,7 @@ export class MusicDatabase extends BaseDatabase {
   public async getMusicByName(name: string): Promise<any> {
     const result = await super.getConnection().raw(`
       SELECT * FROM ${ MusicDatabase.TABLE_MUSIC}
-      WHERE name_music = "${name}"
+      WHERE music_name = "${name}"
       `);
 
     return result[0][0];
@@ -16,7 +16,7 @@ export class MusicDatabase extends BaseDatabase {
     const result = await super.getConnection().raw(`
       SELECT SQL_CALC_FOUND_ROWS * FROM ${ MusicDatabase.TABLE_MUSIC}
       JOIN spotenu_users
-      ON spotenu_users.id = band_id and name_music LIKE "%${musicName}%"
+      ON spotenu_users.id = band_id and music_name LIKE "%${musicName}%"
       LIMIT ${musicsPerPage} OFFSET ${offset}
       `);
 
@@ -29,7 +29,7 @@ export class MusicDatabase extends BaseDatabase {
 
   public async addMusic(id: string, name: string, albumId: string, bandId: string): Promise<void> {
     await super.getConnection().raw(`
-      INSERT INTO ${ MusicDatabase.TABLE_MUSIC}(music_id, name_music, album_id, band_id)
+      INSERT INTO ${ MusicDatabase.TABLE_MUSIC}(music_id, music_name, album_id, band_id)
       VALUES("${id}", "${name}", "${albumId}", "${bandId}")
         `);
   }
