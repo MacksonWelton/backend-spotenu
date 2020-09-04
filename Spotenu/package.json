@@ -33,7 +33,7 @@
     "typescript": "^3.9.2",
     "uuid": "^8.0.0",
     "lbn-lambda-express": "^0.1.10",
-    "bestzip": "^2.1.5"
+    "bestzip": "^2.1.7"
   },
   "devDependencies": {
     "eslint": "^7.5.0",
